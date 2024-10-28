@@ -11,4 +11,4 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 from app import routes
-from app.models import Agent, Product, Category, Factory, Transport, Shipping
+from app.models import agent, product, category, factory, transport, shipping
