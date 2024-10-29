@@ -20,8 +20,7 @@ class Shipping(db.Model):
     shipping_done: so.Mapped[int] = so.mapped_column()
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
-    # shipping_point: so.Mapped['Factory'] = so.relationship(
-    #                 back_populates='shippings')
-    shipping_point = so.relationship('factories', foreign_keys=sa.Column(sa.ForeignKey('factories.id')))
+
+    # shipping_point = so.relationship('factories', foreign_keys=sa.Column(sa.ForeignKey('factories.id')))
     def __repr__(self):
         return '<Shipping {}>'.format(self.name)

@@ -11,3 +11,7 @@ class Transport(db.Model):
                                                 unique=True)
     def __repr__(self):
         return '<ShippingPoint {}>'.format(self.name)
+    # def __eq__(self, other):
+    #     if self.id == other.id or self.name == other.name:
+    #         return True
+    #     return False
