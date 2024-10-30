@@ -12,7 +12,7 @@ class FactoryModel(db.Model):
                                                index=True)
     
 
-    industry: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64)) # тип завода (переработка и т. д.)
+    industry: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64), nullable=True) # TODO тип завода (переработка и т. д.)
     
     # agent = so.relationship('Agent', foreign_keys=sa.Column(sa.ForeignKey('agents.id')))
     # agent: so.Mapped[int] = so.mapped_column(sa.ForeignKey("agents.id'"))

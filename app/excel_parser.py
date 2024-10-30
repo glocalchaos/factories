@@ -2,6 +2,8 @@ import openpyxl as pxl
 from .utils.parser_utils import set_date
 from .models.transport import TransportModel
 
+
+# TODO тримить строки блин
 class Parser:
     def __init__(self, workbook_path='/home/GFKAA3/Projects/factories/src/data.xlsx', placeholder_factory_name='НЕИЗВЕСТЕН'):
         self.workbook = pxl.load_workbook(workbook_path, data_only=True)
