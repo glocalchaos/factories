@@ -1,11 +1,12 @@
 from app import db
 from sqlalchemy import exists
 from sqlalchemy.exc import IntegrityError
+from typing import Iterable
 from ..models.transport import TransportModel
 
 class TransportRepository:
     # def __init__
-    def upload_transport(self, transports): # TODO ИТЕРАБЛЕ of strs
+    def upload_transport(self, transports: Iterable[str]): # TODO ИТЕРАБЛЕ of strs
         session = db.session
     
         # TODO сделать не по корявому

@@ -8,7 +8,7 @@ class Parser:
         self.placeholder_factory_name = placeholder_factory_name
 
     # TODO парсь всё, выдавай туда мап
-    def parseTransport(self):
+    def parse_transport(self):
         data_sheet = self.workbook['Данные']
         transport_list = set()
         product_list = set()
@@ -23,7 +23,7 @@ class Parser:
         return transport_list, product_category_list, product_list
 
 
-    def parseFactories(self):
+    def parse_factories(self):
         data_sheet = self.workbook['Отчет']
         agent_points_dict = {}
         cur_agent_name = data_sheet[6][1].value

@@ -21,10 +21,10 @@ def upload_file():
     file_path = path.join(app.config['UPLOAD_FOLDER'], xls_file.filename)
     xls_file.save(file_path)
     parser = excel_parser.Parser(file_path)
-    transport_names_set, _, _ = parser.parseTransport()
+    transport_names_set, _, _ = parser.parse_transport() # TODO parse
     TransportRepository().upload_transport(transport_names_set)
 
-    agent_points_dict = parser.parseFactories()
+    agent_points_dict = parser.parse_factories()
     FactoryRepository().upload_factories(agent_points_dict)
 
     return redirect(url_for('index'), code=200)
