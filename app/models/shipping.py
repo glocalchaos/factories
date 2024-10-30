@@ -3,9 +3,9 @@ from typing import List, Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
-from app.models.factory import Factory
+from app.models.factory import FactoryModel
 
-class Shipping(db.Model):
+class ShippingModel(db.Model):
     __tablename__ = 'shipments'
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     product_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("products.id"),

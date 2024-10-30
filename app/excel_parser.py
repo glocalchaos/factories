@@ -1,6 +1,6 @@
 import openpyxl as pxl
 from .utils.parser_utils import set_date
-from .models import transport
+from .models.transport import TransportModel
 
 class Parser:
     def __init__(self, workbook_path='/home/GFKAA3/Projects/factories/src/data.xlsx'):
@@ -16,7 +16,7 @@ class Parser:
             transport_list.add(cell_transport.value.lower())
         transport_models = []
         for item in transport_list:
-            model_transport = transport.Transport(
+            model_transport = TransportModel(
                 name = item
             )
             transport_models.append(model_transport)
