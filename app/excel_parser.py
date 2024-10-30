@@ -7,9 +7,9 @@ class Parser:
         self.workbook = pxl.load_workbook(workbook_path, data_only=True)
         self.placeholder_factory_name = placeholder_factory_name
 
+    # TODO парсь всё, выдавай туда мап
     def parseTransport(self):
         data_sheet = self.workbook['Данные']
-        # date = set_date(data_sheet)
         transport_list = set()
         product_list = set()
         product_category_list = set()
@@ -28,19 +28,12 @@ class Parser:
         agent_points_dict = {}
         cur_agent_name = data_sheet[6][1].value
         for row in data_sheet.iter_rows(min_row=6, max_row=121, min_col=2, max_col=3):
-            # if row[0].style.lower is None:
-            #     break
             if row[0].value is not None:
                 cur_agent_name = row[0].value
                 agent_points_dict[cur_agent_name] = []
             if row[1].value is None:
                 continue
-                # factory_name = self.placeholder_factory_name
             agent_points_dict[cur_agent_name].append(row[1].value)
-        # for row in data_sheet.iter_rows(min_row=6, min_col=2, max_col=10):
-        #     for cell in row:
-        #         print(cell.value, end=" ")
-        #     print()
         return agent_points_dict
         
 

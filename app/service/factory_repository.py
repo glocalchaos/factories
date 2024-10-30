@@ -14,7 +14,6 @@ class FactoryRepository:
             # ))
             
             AgentRepository().upload_agent(agent_name=agent)
-            print("8")
             for factory in agent_points_dict[agent]:
                 session.add(FactoryModel(
                     name = factory,

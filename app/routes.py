@@ -13,7 +13,7 @@ from . import excel_parser
 def index():
     return "Hello world"
 
-@app.route('/uploadTransport', methods=['POST'])
+@app.route('/uploadXlsData', methods=['POST'])
 def upload_file():
     xls_file = request.files['file']
     if xls_file.filename == '':
