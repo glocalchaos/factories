@@ -11,4 +11,4 @@ class CategoryModel(db.Model):
     production: so.Mapped['ProductModel'] = so.relationship(
                     back_populates='category')
     def __repr__(self):
-        return '<ShippingPoint {}>'.format(self.name)
+        return '<Category {}>'.format(self.name)

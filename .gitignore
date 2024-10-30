@@ -8,3 +8,8 @@ htmlcov/
 .tox/
 docs/_build/
 src/
+__pycache__/*
+app/__pycache__/*
+__pycache__/factories.cpython-38.pyc
+app/__pycache__/routes.cpython-38.pyc
+migrations/versions/*

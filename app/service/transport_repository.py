@@ -10,13 +10,13 @@ class TransportRepository:
     
         # TODO сделать не по корявому
         for transport_name in transports:
-            if TransportModel.query(exists(TransportModel).where(name == transport_name)).scalar(): # ERROR моделька не видит собственные поля???(
+            if session.query(TransportModel).filter(TransportModel.name == transport_name).scalar(): # ERROR моделька не видит собственные поля???(
                 continue
-            # if TransportModel.exists(transport_name):
-            #     continue
+
             session.add(TransportModel(
                 name = transport_name,
             ))
+            
         session.commit()
         session.close()
 '''
