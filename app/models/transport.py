@@ -12,6 +12,3 @@ class TransportModel(db.Model):
                                                 unique=True)
     def __repr__(self):
         return '<Transport {}>'.format(self.name)
-    
-    # def exists(transport_name: str):
-    #     return TransportModel.query(exists().where(TransportModel.name == transport_name)).scalar() # ERROR моделька не видит собственные поля???(

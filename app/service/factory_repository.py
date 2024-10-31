@@ -9,10 +9,6 @@ class FactoryRepository:
     
         # TODO сделать не по корявому
         for agent in agent_points_dict.keys():
-            # session.add(FactoryModel(
-            #     name = FactoryModel,
-            # ))
-            
             AgentRepository().upload_agent(agent_name=agent)
             for factory in agent_points_dict[agent]:
                 if session.query(FactoryModel).filter(FactoryModel.name == factory).scalar():

@@ -5,7 +5,6 @@ from typing import Iterable
 from ..models.transport import TransportModel
 
 class TransportRepository:
-    # def __init__
     def upload_transports(self, transports: Iterable[str]): # TODO ИТЕРАБЛЕ of strs
         session = db.session
     
