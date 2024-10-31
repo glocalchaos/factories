@@ -15,6 +15,8 @@ class FactoryRepository:
             
             AgentRepository().upload_agent(agent_name=agent)
             for factory in agent_points_dict[agent]:
+                if session.query(FactoryModel).filter(FactoryModel.name == factory).scalar():
+                    continue
                 session.add(FactoryModel(
                     name = factory,
                     agent_id = AgentRepository().get_agent_id_by_name(agent_name=agent)
@@ -22,3 +24,8 @@ class FactoryRepository:
             
         session.commit()
         session.close()
+    
+    def get_id_by_name(self, name: str) -> int:
+        session = db.session
+        product = session.query(FactoryModel).filter(FactoryModel.name == name).scalar()
+        return product.id

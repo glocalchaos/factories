@@ -6,12 +6,12 @@ from ..models.transport import TransportModel
 
 class TransportRepository:
     # def __init__
-    def upload_transport(self, transports: Iterable[str]): # TODO ИТЕРАБЛЕ of strs
+    def upload_transports(self, transports: Iterable[str]): # TODO ИТЕРАБЛЕ of strs
         session = db.session
     
         # TODO сделать не по корявому
         for transport_name in transports:
-            if session.query(TransportModel).filter(TransportModel.name == transport_name).scalar(): # ERROR моделька не видит собственные поля???(
+            if session.query(TransportModel).filter(TransportModel.name == transport_name).scalar():
                 continue
 
             session.add(TransportModel(
@@ -20,16 +20,23 @@ class TransportRepository:
             
         session.commit()
         session.close()
-'''
-            # t = Transport(
-            #     name = transport_name,
-            # )
-            # session.add(t)
-            # try:
-            #     session.commit()
-            # except IntegrityError:
-            #     session.rollback()
-            #     session.flush()
-'''
+
+    def upload_transport(self, transport: str):
+        session = db.session
+
+        if session.query(TransportModel).filter(TransportModel.name == transport).scalar():
+            return
+        
+        session.add(TransportModel(
+                name = transport,
+            ))
+            
+        session.commit()
+        session.close()
+
+    def get_id_by_name(self, name: str) -> int:
+        session = db.session
+        t = session.query(TransportModel).filter(TransportModel.name == name).scalar()
+        return t.id
         
         

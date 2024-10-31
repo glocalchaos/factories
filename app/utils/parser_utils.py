@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 # TODO Hardcode!!
-def set_date(sheet: worksheet.worksheet):
+def get_date(sheet: worksheet.worksheet):
     year = int(sheet['C1'].value)
     month = int(sheet['C3'].value)
     day = int(sheet['C4'].value)
@@ -21,14 +21,15 @@ class ShippingRecordType:
                  cell_shipping_plan: Cell, 
                  cell_shipping_done: Cell, 
                  cell_notes: Cell):
-        self._shipping_point = cell_shipping_point
-        self._product = cell_product
-        self._product_category = cell_product_category
-        self._transport = cell_transport
-        self._monthly_plan = cell_monthly_plan
-        self._shipping_plan = cell_shipping_plan
-        self._shipping_done = cell_shipping_done
-        self._notes = cell_notes
+
+        self.shipping_point : str = cell_shipping_point
+        self.product : str = cell_product
+        self.product_category : str = cell_product_category
+        self.transport : str  = cell_transport
+        self.monthly_plan : float  = cell_monthly_plan
+        self.shipping_plan : float  = cell_shipping_plan
+        self.shipping_done : float  = cell_shipping_done
+        self.notes : str  = cell_notes
 
     @property
     def shipping_point(self) -> str:
@@ -36,7 +37,7 @@ class ShippingRecordType:
     
     @shipping_point.setter
     def shipping_point(self, cell: Cell):
-        self._shipping_point = cell.value.trim()
+        self._shipping_point = cell.value.strip()
 
     
     @property
@@ -45,7 +46,7 @@ class ShippingRecordType:
     
     @product.setter
     def product(self, cell: Cell):
-        self._product = cell.value.lower().trim()
+        self._product = cell.value.lower().strip()
     
     @property
     def product_category(self) -> str:
@@ -53,7 +54,7 @@ class ShippingRecordType:
 
     @product_category.setter
     def product_category(self, cell: Cell):
-        self._product_category = cell.value.lower().trim()
+        self._product_category = cell.value.lower().strip()
 
     @property
     def transport(self) -> str:
@@ -61,31 +62,31 @@ class ShippingRecordType:
     
     @transport.setter
     def transport(self, cell: Cell):
-        self._transport = cell.value.lower().trim() 
+        self._transport = cell.value.lower().strip() 
 
     @property
-    def monthly_plan(self) -> int:
+    def monthly_plan(self) -> float:
         return self._monthly_plan
     
     @monthly_plan.setter
     def monthly_plan(self, cell: Cell):
-        self._monthly_plan = cell_to_int(cell)
+        self._monthly_plan = cell_to_float(cell)
         
     @property
-    def shipping_plan(self) -> int:
+    def shipping_plan(self) -> float:
         return self._shipping_plan
             
     @shipping_plan.setter
     def shipping_plan(self, cell: Cell):
-        self._shipping_plan = cell_to_int(cell)
+        self._shipping_plan = cell_to_float(cell)
 
     @property
-    def shipping_done(self) -> int:
+    def shipping_done(self) -> float:
         return self._shipping_done
             
     @shipping_plan.setter
     def shipping_done(self, cell: Cell):
-        self._shipping_done = cell_to_int(cell)
+        self._shipping_done = cell_to_float(cell)
     
     @property
     def notes(self) -> str:
@@ -97,11 +98,13 @@ class ShippingRecordType:
 
 
 
-def cell_to_int(cell: Cell) -> int:
+def cell_to_float(cell: Cell) -> float:
+    if cell.value is None:
+        return None
     try:
-        value = int(cell.value)
+        value = float(cell.value)
     except ValueError:
-            raise NumberNeededInCell(cell)
+        raise NumberNeededInCell(cell)
     except Exception as ex:
         raise ex
 

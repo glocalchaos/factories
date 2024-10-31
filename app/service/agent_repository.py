@@ -2,7 +2,7 @@ from app import db
 from typing import Iterable
 from ..models.agent import AgentModel
 
-#   TODO ERRORS где надо
+#   TODO catch ERRORS где надо
 
 class AgentRepository:
     def upload_agents(self, agents: Iterable[str]):
@@ -19,6 +19,8 @@ class AgentRepository:
             
         session.commit()
         session.close()
+
+        
     def upload_agent(self, agent_name: str):
         session = db.session
         if session.query(AgentModel).filter(AgentModel.name == agent_name).scalar():
