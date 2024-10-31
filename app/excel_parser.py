@@ -28,14 +28,14 @@ class Parser:
     def parse_factories(self):
         data_sheet = self.workbook['Отчет']
         agent_points_dict = {}
-        cur_agent_name = data_sheet[6][1].value
+        cur_agent_name = data_sheet[6][1].value.strip()
         for row in data_sheet.iter_rows(min_row=6, max_row=121, min_col=2, max_col=3):
             if row[0].value is not None:
-                cur_agent_name = row[0].value
+                cur_agent_name = row[0].value.strip()
                 agent_points_dict[cur_agent_name] = []
             if row[1].value is None:
                 continue
-            agent_points_dict[cur_agent_name].append(row[1].value)
+            agent_points_dict[cur_agent_name].append(row[1].value.strip())
         return agent_points_dict
         
 
