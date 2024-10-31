@@ -19,13 +19,6 @@ class Parser:
         for row in data_sheet.iter_rows(min_row=7, min_col=3, max_row=92, max_col=11):
             row = list(row)
             row.pop(7) # TODO fix: hardcode - не считываем стб "выполнение" в процентах
-            
-            ###########
-            # for item in row:
-            #     print(item.value, end=" ")
-            # print()
-            ###########
-
 
             # cell_shipping_point, cell_product, cell_product_category, cell_transport, cell_monthly_plan, cell_shipping_plan, cell_shipping_done, _, cell_notes = row
             result_list.append(ShippingRecordType(*row))
