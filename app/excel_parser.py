@@ -9,17 +9,15 @@ class Parser:
         self.workbook = load_workbook(workbook_path, data_only=True)
         self.placeholder_factory_name = placeholder_factory_name
 
-    # !TODO парсь всё, выдавай туда мап
     # TODO fix hardcode
     def parse_all(self) -> Iterable[ShippingRecordType]:
         data_sheet = self.workbook['Данные']
         # transport_list = set()
         # product_list = set()
         # product_category_list = set()
-        result_set = list()
+        result_list = list()
         for row in data_sheet.iter_rows(min_row=7, min_col=3, max_row=92, max_col=11):
             row = list(row)
-            # print(row)
             row.pop(7) # TODO fix: hardcode - не считываем стб "выполнение" в процентах
             
             ###########
@@ -30,12 +28,13 @@ class Parser:
 
 
             # cell_shipping_point, cell_product, cell_product_category, cell_transport, cell_monthly_plan, cell_shipping_plan, cell_shipping_done, _, cell_notes = row
-            result_set.append(ShippingRecordType(*row))
+            result_list.append(ShippingRecordType(*row))
+
             # transport_list.add(cell_transport.value.lower())
             # product_category_list.add(cell_product_category.value.lower())
             # product_list.add(cell_product.value.lower())
 
-        return result_set # transport_list, product_category_list, product_list
+        return result_list # transport_list, product_category_list, product_list
 
     def get_datetime(self) -> datetime:
         return get_date(self.workbook['Данные'])

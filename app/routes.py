@@ -27,7 +27,6 @@ def upload_file():
     FactoryRepository().upload_factories(agent_points_dict)
 
     parsed_data = parser.parse_all()
-    # TODO ERROR куда пропадают числа оло?????????7 уле=елеуле=еле
     for record in parsed_data:
         ShippingRepository().upload_shipping(record, cur_datetime)
 

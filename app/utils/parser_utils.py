@@ -107,6 +107,7 @@ def cell_to_float(cell: Cell) -> float:
         raise NumberNeededInCell(cell)
     except Exception as ex:
         raise ex
+    return value
 
 
 class NumberNeededInCell(Exception):
