@@ -92,7 +92,7 @@ class ShippingRecordType:
     def notes(self) -> str:
         return self._notes
     
-    @shipping_point.setter
+    @notes.setter
     def notes(self, cell: Cell):
         self._notes = cell.value
 

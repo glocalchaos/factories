@@ -16,13 +16,15 @@ def index():
 def upload_file():
     xls_file = request.files['file']
     if xls_file.filename == '':
-        return redirect(url_for('index'), code=400) # TODO statuses
+        return redirect(url_for('index'), code=400) # * REFACTOR statuses
     file_path = path.join(app.config['UPLOAD_FOLDER'], xls_file.filename)
     xls_file.save(file_path)
 
     parser = excel_parser.Parser(file_path)
     
     cur_datetime = parser.get_datetime()
+
+    # TODO вместо этого регионы
     agent_points_dict = parser.parse_factories()
     FactoryRepository().upload_factories(agent_points_dict)
 
@@ -31,4 +33,4 @@ def upload_file():
         ShippingRepository().upload_shipping(record, cur_datetime)
 
 
-    return redirect(url_for('index'), code=200) # TODO statuses
+    return redirect(url_for('index'), code=200) # * REFACTOR statuses
