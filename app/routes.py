@@ -1,7 +1,7 @@
 from app import app
 from app import db
 from os import path
-from flask import request, redirect, url_for
+from flask import request, redirect, url_for, Response
 from .service.shipping_repository import ShippingRepository
 from .service.product_repository import ProductRepository
 from .service.factory_repository import FactoryRepository
@@ -29,7 +29,7 @@ def upload_file():
     """
     xls_file = request.files['file']
     if xls_file.filename == '':
-        return redirect(url_for('index'), code=400) # * REFACTOR statuses
+        return redirect(url_for('index'), code=400)
     file_path = path.join(app.config['UPLOAD_FOLDER'], xls_file.filename)
     xls_file.save(file_path)
 
@@ -50,4 +50,4 @@ def upload_file():
         ShippingRepository().upload_shipping(record, cur_datetime)
 
 
-    return redirect(url_for('index'), code=200) # * REFACTOR statuses
+    return redirect(url_for('index'), code=200)

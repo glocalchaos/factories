@@ -4,7 +4,7 @@ from ..models.factory import FactoryModel
 from .agent_repository import AgentRepository
 
 class FactoryRepository:
-    def upload_factories(self, agent_points_dict: Mapping[str, Iterable[str]]): # TODO ИТЕРАБЛЕ of strs
+    def upload_factories(self, agent_points_dict: Mapping[str, Iterable[str]]):
         session = db.session
     
         # TODO сделать не по корявому
