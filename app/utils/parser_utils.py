@@ -46,7 +46,7 @@ class ShippingRecordType:
     
     @product.setter
     def product(self, cell: Cell):
-        self._product = cell.value.lower().strip()
+        self._product = cell.value.strip()
     
     @property
     def product_category(self) -> str:
@@ -54,7 +54,7 @@ class ShippingRecordType:
 
     @product_category.setter
     def product_category(self, cell: Cell):
-        self._product_category = cell.value.lower().strip()
+        self._product_category = cell.value.strip()
 
     @property
     def transport(self) -> str:

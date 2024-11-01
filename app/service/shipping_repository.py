@@ -25,7 +25,9 @@ class ShippingRepository:
         #########
         # print(shippingRecord.monthly_plan, shippingRecord.shipping_plan, shippingRecord.shipping_done)
         #########
-
+        factory_id = self._factory_repo.get_id_by_name(shippingRecord.shipping_point)
+        if factory_id is None:
+            self._factory_repo.upload_factory(shippingRecord.shipping_point)
         session.add(ShippingModel(
             product_id = self._product_repo.get_id_by_name(shippingRecord.product),
             transport_id = self._transport_repo.get_id_by_name(shippingRecord.transport),

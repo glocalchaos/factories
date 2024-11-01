@@ -35,7 +35,10 @@ class AgentRepository:
     def get_agent_id_by_name(self, agent_name: str) -> int:
         session = db.session
         agent = session.query(AgentModel).filter(AgentModel.name == agent_name).scalar()
-        return agent.id
+        if agent:
+            return agent.id
+        else:
+            return None
 
 
     

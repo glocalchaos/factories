@@ -20,8 +20,18 @@ class FactoryRepository:
             
         session.commit()
         session.close()
+    def upload_factory(self, factory_name: str, agent_name=None):
+        session = db.session
+        agent_id = AgentRepository().get_agent_id_by_name(agent_name=agent_name)
+        session.add(FactoryModel(
+                    name = factory_name,
+                    agent_id = agent_id,
+                ))
+        
     
     def get_id_by_name(self, name: str) -> int:
         session = db.session
-        product = session.query(FactoryModel).filter(FactoryModel.name == name).scalar()
-        return product.id
+        factory = session.query(FactoryModel).filter(FactoryModel.name == name).scalar()
+        if factory is None:
+            return None
+        return factory.id

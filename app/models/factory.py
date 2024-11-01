@@ -9,7 +9,8 @@ class FactoryModel(db.Model):
     name: so.Mapped[str] = so.mapped_column(sa.String(64), index=True)
                                                 # unique=True)
     agent_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("agents.id"),
-                                               index=True)
+                                               index=True,
+                                               nullable=True) # ! пока неполные данные - так
     
 
     industry: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64), nullable=True) # TODO тип завода (переработка и т. д.)

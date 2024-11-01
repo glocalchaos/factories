@@ -19,6 +19,7 @@ class ProductRepository:
             
         session.commit()
         session.close()
+        
     def get_id_by_name(self, name: str) -> int:
         session = db.session
         product = session.query(ProductModel).filter(ProductModel.name == name).scalar()
