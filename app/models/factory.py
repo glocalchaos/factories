@@ -6,9 +6,8 @@ from app import db
 class FactoryModel(db.Model):
     __tablename__ = 'factories'
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    name: so.Mapped[str] = so.mapped_column(sa.String(64), index=True)
-                                                # unique=True)
-    agent_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("agents.id"),
+    name: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
+    region_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("regions.id"),
                                                index=True,
                                                nullable=True) # ! пока неполные данные - так
     
