@@ -15,6 +15,18 @@ def index():
 
 @app.route('/uploadXlsData', methods=['POST'])
 def upload_file():
+    """Upload .xls file to database
+    ---
+    parameters:
+        - name: file
+          required: true
+          in: formData
+          type: file
+
+    responses:
+        200:
+            description: Data from file fully uploaded
+    """
     xls_file = request.files['file']
     if xls_file.filename == '':
         return redirect(url_for('index'), code=400) # * REFACTOR statuses
