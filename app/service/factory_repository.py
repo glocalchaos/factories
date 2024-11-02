@@ -1,7 +1,7 @@
 from app import db
 from typing import Mapping, Iterable
 from ..models.factory import FactoryModel
-from .agent_repository import AgentRepository
+from .region_repository import RegionRepository
 
 class FactoryRepository:
     def upload_factories(self, agent_points_dict: Mapping[str, Iterable[str]]):

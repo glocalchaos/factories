@@ -3,7 +3,7 @@ from typing import List, Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
-from app.models.factory import FactoryModel
+# from app.models.factory import FactoryModel
 
 class ShippingModel(db.Model):
     __tablename__ = 'shipments'
@@ -22,6 +22,9 @@ class ShippingModel(db.Model):
 
 
     # shipping_point = so.relationship('factories', foreign_keys=sa.Column(sa.ForeignKey('factories.id')))
+    shipping_point: so.Mapped['FactoryModel'] = so.relationship(
+                    back_populates='shippings')
+
     def __repr__(self):
         return '<Shipping {}>'.format(self.name)
     
