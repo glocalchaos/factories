@@ -1,7 +1,6 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
-# from app.models.category import Category
 
 class ProductModel(db.Model):
     __tablename__ = 'products'

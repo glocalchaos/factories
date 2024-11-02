@@ -15,10 +15,7 @@ class FactoryModel(db.Model):
 
     industry: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64), nullable=True) # TODO тип завода (переработка и т. д.)
     
-    # agent = so.relationship('Agent', foreign_keys=sa.Column(sa.ForeignKey('agents.id')))
-    # agent: so.Mapped[int] = so.mapped_column(sa.ForeignKey("agents.id'"))
 
-    # shippings = so.relationship('ShippingModel')#, backref=so.backref('shipments'))
     shippings : so.Mapped['ShippingModel'] = so.relationship(
                     back_populates='shipping_point')
 

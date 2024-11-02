@@ -21,7 +21,6 @@ class ShippingModel(db.Model):
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
 
-    # shipping_point = so.relationship('factories', foreign_keys=sa.Column(sa.ForeignKey('factories.id')))
     shipping_point: so.Mapped['FactoryModel'] = so.relationship(
                     back_populates='shippings')
 

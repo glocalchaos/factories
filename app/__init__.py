@@ -18,20 +18,7 @@ migrate = Migrate(app, db)
 swagger = Swagger(app, config=swagger_config)
 
 from app import routes
-# from app.models import region, product, category, factory, transport, shipping
-# from app.models.region import RegionModel
-# from app.models.product import ProductModel
-# from app.models.category import CategoryModel
-# from app.models.factory import FactoryModel
-# from app.models.transport import TransportModel
-# from app.models.shipping import ShippingModel
 
-
-
-
-
-# @app.cli.command("seed-db")
-# def seed_db():
 with app.app_context():
     db.create_all()
     from app.models.region import RegionModel

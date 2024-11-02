@@ -7,10 +7,6 @@ from ..models.shipping import ShippingModel
 from .transport_repository import TransportRepository
 from .factory_repository import FactoryRepository
 
-
-
-# ShippingTuple = namedtuple('ShippingTuple', 'factory product category transport monthly_plan ship_plan ship_done note')
-
 class ShippingRepository:
     def __init__(self):
         self._product_repo = ProductRepository()
@@ -22,9 +18,6 @@ class ShippingRepository:
         self._transport_repo.upload_transport(shippingRecord.transport)
         session = db.session
 
-        #########
-        # print(shippingRecord.monthly_plan, shippingRecord.shipping_plan, shippingRecord.shipping_done)
-        #########
         factory_id = self._factory_repo.get_id_by_name(shippingRecord.shipping_point)
         if factory_id is None:
             self._factory_repo.upload_factory(shippingRecord.shipping_point)
