@@ -5,6 +5,8 @@ from flask import request, redirect, url_for, Response
 from .service.shipping_repository import ShippingRepository
 from .service.product_repository import ProductRepository
 from .service.factory_repository import FactoryRepository
+import os
+from pathlib import Path
 
 from . import excel_parser
 
@@ -30,6 +32,10 @@ def upload_file():
     xls_file = request.files['file']
     if xls_file.filename == '':
         return redirect(url_for('index'), code=400)
+    
+
+    Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
+
     file_path = path.join(app.config['UPLOAD_FOLDER'], xls_file.filename)
     xls_file.save(file_path)
 
@@ -49,5 +55,6 @@ def upload_file():
     for record in parsed_data:
         ShippingRepository().upload_shipping(record, cur_datetime)
 
+    os.remove(file_path)
 
     return redirect(url_for('index'), code=200)
