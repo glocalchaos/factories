@@ -2,7 +2,7 @@ from app import db
 from typing import Dict
 from ..models.region import RegionModel
 
-#   TODO catch ERRORS где надо
+# TODO catch ERRORS где надо
 
 class RegionRepository:
     def upload_regions(self, regions: Dict[str, int]):
