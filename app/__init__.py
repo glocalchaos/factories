@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from app.config import Config, swagger_config
 from flasgger import Swagger
 from app.utils.db_utils import load_preset_regions
-# from app.models.factory import FactoryModel
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from typing import List
