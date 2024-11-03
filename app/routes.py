@@ -10,10 +10,12 @@ from pathlib import Path
 
 from . import excel_parser
 
+
 @app.route('/')
 @app.route('/index')
 def index():
     return "Hello world"
+
 
 @app.route('/uploadXlsData', methods=['POST'])
 def upload_file():
@@ -28,11 +30,12 @@ def upload_file():
     responses:
         200:
             description: Data from file fully uploaded
+        400:
+            description: File not provided
     """
     xls_file = request.files['file']
     if xls_file.filename == '':
         return redirect(url_for('index'), code=400)
-    
 
     Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
 
@@ -40,12 +43,11 @@ def upload_file():
     xls_file.save(file_path)
 
     parser = excel_parser.Parser(file_path)
-    
+
     cur_datetime = parser.get_datetime()
 
-    # TODO вместо этого регионы
-    agent_points_dict = parser.parse_factories()
-    FactoryRepository().upload_factories(agent_points_dict)
+    # agent_points_dict = parser.parse_factories()
+    # FactoryRepository().upload_factories(agent_points_dict)
 
     product_categories = parser.parse_products_categories()
     for product_name, category_name in product_categories.items():
