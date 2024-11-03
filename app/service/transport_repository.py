@@ -1,8 +1,7 @@
 from app import db
-from sqlalchemy import exists
-from sqlalchemy.exc import IntegrityError
 from typing import Iterable
 from ..models.transport import TransportModel
+
 
 class TransportRepository:
     def upload_transports(self, transports: Iterable[str]):
@@ -14,7 +13,7 @@ class TransportRepository:
                 continue
 
             session.add(TransportModel(
-                name = transport_name,
+                name=transport_name,
             ))
             
         session.commit()
@@ -27,7 +26,7 @@ class TransportRepository:
             return
         
         session.add(TransportModel(
-                name = transport,
+                name=transport,
             ))
             
         session.commit()
@@ -37,5 +36,3 @@ class TransportRepository:
         session = db.session
         t = session.query(TransportModel).filter(TransportModel.name == name).scalar()
         return t.id
-        
-        

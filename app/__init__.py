@@ -24,21 +24,5 @@ from app import routes
 with app.app_context():
     db.create_all()
     upload_regions(db)
-    # upload_factories(db)
-    # from app.models.region import RegionModel
-    # regions = load_preset_regions()
-    # session = db.session
-    
-    # for name, code in regions.items():
-    #     if session.query(RegionModel).filter(RegionModel.code == code).scalar():
-    #         continue
-
-    #     session.add(RegionModel(
-    #         name = name,
-    #         code = code
-    #     ))
-        
-    # session.commit()
-    # session.close()
 
 
