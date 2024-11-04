@@ -56,9 +56,6 @@ def upload_file():
 
     cur_datetime = parser.get_datetime()
 
-    # agent_points_dict = parser.parse_factories()
-    # FactoryRepository().upload_factories(agent_points_dict)
-
     product_categories = parser.parse_products_categories()
     for product_name, category_name in product_categories.items():
         ProductRepository().upload_product(product_name, category_name)
@@ -71,6 +68,7 @@ def upload_file():
 
     return redirect(url_for('index'), code=200)
 
+# ! TODO Swagger
 
 # ! TODO фильтрация по дате
 @app.route('/factoriesByRegions', methods=['GET'])
@@ -79,22 +77,21 @@ def get_regions():
     result = []
 
     for region in regions:
-        # factories = [{'name': factory.name} for factory in region.shipping_points]
-
         factories = []
-        for factory in RegionRepository.get_shipping_points_by_region(region):# region.shipping_points:
-            # transports = [{'name': transport.name} for transport in FactoryRepository.get_used_transports(factory)]
+        for factory in RegionRepository.get_shipping_points_by_region(region):
             transports = []
             for transport in FactoryRepository.get_used_transports(factory):
-                # app.logger.info(transport)
                 transports.append({
                     "name": transport.name,
                     "monthly_plan": ShippingRepository().monthly_plan_by_factory_and_transport(factory, transport)
                 })
 
-            product_categories = [{'name': category.name} for category in FactoryRepository.get_product_categories(factory)]
-            # product_categories = []
-            # for category in Fact
+            product_categories = []
+            for category in FactoryRepository.get_product_categories(factory):
+                product_categories.append({
+                    "name": category.name,
+                    "monthly_plan": ShippingRepository().monthly_plan_by_factory_and_category(factory, category)
+                })
             factory_info = {
                 "name": factory.name,
                 "monthly_plan": ShippingRepository().monthly_plan_by_factory(factory),
