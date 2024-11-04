@@ -23,6 +23,8 @@ class ShippingModel(db.Model):
 
     shipping_point: so.Mapped['FactoryModel'] = so.relationship(
                     back_populates='shippings')
+    # transport: so.Mapped['TransportModel'] = so.relationship(
+    #                 back_populates='shippings_involved')
 
     def __repr__(self):
         return '<Shipping {}>'.format(self.name)

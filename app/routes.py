@@ -1,15 +1,25 @@
 from app import app
 from app import db
 from os import path
-from flask import request, redirect, url_for, Response
+from flask import request, redirect, url_for, jsonify
 from .service.shipping_repository import ShippingRepository
 from .service.product_repository import ProductRepository
 from .service.factory_repository import FactoryRepository
+from .service.region_repository import RegionRepository
+
 import os
 from pathlib import Path
 
 from . import excel_parser
 
+def get_db_session():
+    session = session
+    try:
+        yield session
+    except Exception:
+        session.rollback()
+    finally:
+        session.close()
 
 @app.route('/')
 @app.route('/index')
@@ -60,3 +70,43 @@ def upload_file():
     os.remove(file_path)
 
     return redirect(url_for('index'), code=200)
+
+
+# ! TODO фильтрация по дате
+@app.route('/factoriesByRegions', methods=['GET'])
+def get_regions():
+    regions = RegionRepository.get_all_regions()
+    result = []
+
+    for region in regions:
+        # factories = [{'name': factory.name} for factory in region.shipping_points]
+
+        factories = []
+        for factory in RegionRepository.get_shipping_points_by_region(region):# region.shipping_points:
+            # transports = [{'name': transport.name} for transport in FactoryRepository.get_used_transports(factory)]
+            transports = []
+            for transport in FactoryRepository.get_used_transports(factory):
+                # app.logger.info(transport)
+                transports.append({
+                    "name": transport.name,
+                    "monthly_plan": ShippingRepository().monthly_plan_by_factory_and_transport(factory, transport)
+                })
+
+            product_categories = [{'name': category.name} for category in FactoryRepository.get_product_categories(factory)]
+            # product_categories = []
+            # for category in Fact
+            factory_info = {
+                "name": factory.name,
+                "monthly_plan": ShippingRepository().monthly_plan_by_factory(factory),
+                "transport_types": transports,
+                "product_categories": product_categories
+            }
+            factories.append(factory_info)
+
+        result.append({
+            'region': region.name,
+            "code": region.code,
+            'factories': factories
+        })
+
+    return jsonify(result)

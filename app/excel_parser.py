@@ -17,7 +17,7 @@ class Parser:
         result_list = list()
         # &TODO переделать потом т к категории-продукты парсим отдельно из сервиса
         for row in data_sheet.iter_rows(min_row=7, min_col=3,
-                                        max_row=92, max_col=11):
+                                        max_row=68, max_col=11):
             row = list(row)
             row.pop(7)  # &TODO fix: hardcode - не считываем стб "выполнение" в процентах
 
@@ -28,20 +28,20 @@ class Parser:
     def get_datetime(self) -> datetime:
         return get_date(self.workbook['Данные'])
 
-    # ! Deprecated
-    def parse_factories(self):
-        data_sheet = self.workbook['Отчет']
-        agent_points_dict = {}
-        cur_agent_name = data_sheet[6][1].value.strip()  # &TODO fix hardcode
-        for row in data_sheet.iter_rows(min_row=6, max_row=121, 
-                                        min_col=2, max_col=3):  # &TODO fix hardcode
-            if row[0].value is not None:
-                cur_agent_name = row[0].value.strip()
-                agent_points_dict[cur_agent_name] = []
-            if row[1].value is None:
-                continue
-            agent_points_dict[cur_agent_name].append(row[1].value.strip())
-        return agent_points_dict
+    # # ! Deprecated
+    # def parse_factories(self):
+    #     data_sheet = self.workbook['Отчет']
+    #     agent_points_dict = {}
+    #     cur_agent_name = data_sheet[6][1].value.strip()  # &TODO fix hardcode
+    #     for row in data_sheet.iter_rows(min_row=6, max_row=121, 
+    #                                     min_col=2, max_col=3):  # &TODO fix hardcode
+    #         if row[0].value is not None:
+    #             cur_agent_name = row[0].value.strip()
+    #             agent_points_dict[cur_agent_name] = []
+    #         if row[1].value is None:
+    #             continue
+    #         agent_points_dict[cur_agent_name].append(row[1].value.strip())
+    #     return agent_points_dict
 
     def parse_products_categories(self) -> Dict[str, str]:
         service_sheet = self.workbook['Service_']

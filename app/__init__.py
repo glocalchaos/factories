@@ -12,6 +12,7 @@ from typing import List
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.json.sort_keys = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 swagger = Swagger(app, config=swagger_config)

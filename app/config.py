@@ -8,7 +8,7 @@ class Config:
         'postgresql://postgres:postgres@localhost:5431'
     UPLOAD_FOLDER = 'src/'
     JSON_AS_ASCII = False
-    JSON_SORT_KEYS = False
+    # JSON_SORT_KEYS = False # ! removed in flask 2.3
 
 
 swagger_config = {
