@@ -4,7 +4,7 @@ import sqlalchemy.orm as so
 from datetime import datetime
 from sqlalchemy import func
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+from sqlalchemy.ext.hybrid import hybrid_method
 
 
 from app import db, ma
@@ -35,25 +35,25 @@ class ShippingModel(db.Model):
     def __repr__(self):
         return '<Shipping {}>'.format(self.name)
     
-    @hybrid_property
-    def monthly_plan_by_factory(self, factory_id : int, date: datetime) -> int:
-        return ShippingModel.query(
-            func.sum(ShippingModel.monthly_plan)
-        ).join(TransportModel, self.id==ShippingModel.transport_id).filter(
-            ShippingModel.shipping_point_id==factory_id,
-            ShippingModel.timestamp==date,
-            TransportModel.name==self.name
-        ).one()[0]
+    # @hybrid_method
+    # def monthly_plan_by_factory(self, factory_id : int, date: datetime) -> int:
+    #     return ShippingModel.query(
+    #         func.sum(ShippingModel.monthly_plan)
+    #     ).join(TransportModel, self.id==ShippingModel.transport_id).filter(
+    #         ShippingModel.shipping_point_id==factory_id,
+    #         ShippingModel.timestamp==date,
+    #         TransportModel.name==self.name
+    #     ).one()[0]
     
-    @hybrid_property
-    def daily_plan_by_factory(self, factory_id : int, date: datetime) -> int:
-        return ShippingModel.query(
-            func.sum(ShippingModel.shipping_plan)
-        ).join(TransportModel, self.id==ShippingModel.transport_id).filter(
-            ShippingModel.shipping_point_id==factory_id,
-            ShippingModel.timestamp==date,
-            TransportModel.name==self.name
-        ).one()[0]
+    # @hybrid_method
+    # def daily_plan_by_factory(self, factory_id : int, date: datetime) -> int:
+    #     return ShippingModel.query(
+    #         func.sum(ShippingModel.shipping_plan)
+    #     ).join(TransportModel, self.id==ShippingModel.transport_id).filter(
+    #         ShippingModel.shipping_point_id==factory_id,
+    #         ShippingModel.timestamp==date,
+    #         TransportModel.name==self.name
+    #     ).one()[0]
     
     # @hybrid_property
     # def daily_plan_by_factory(self, factory : FactoryModel, date_from: datetime, date_to: datetime) -> int:
@@ -80,16 +80,37 @@ class TransportModel(db.Model):
     def __repr__(self):
         return '<Transport {}>'.format(self.name)
     
-    @hybrid_property
-    def monthly_plan_by_factory(self, factory_id : int, date: datetime) -> int:
-        return ShippingModel.query(
-            func.sum(ShippingModel.monthly_plan)
-        ).join(TransportModel, self.id==ShippingModel.transport_id).filter(
-            ShippingModel.shipping_point_id==factory_id,
-            ShippingModel.timestamp==date,
-            TransportModel.name==self.name
-        ).one()[0]
+    # @hybrid_method
+    # def monthly_plan_by_factory(self, factory_id : int, date: datetime) -> int:
+    #     return ShippingModel.query(
+    #         func.sum(ShippingModel.monthly_plan)
+    #     ).join(TransportModel, self.id==ShippingModel.transport_id).filter(
+    #         ShippingModel.shipping_point_id==factory_id,
+    #         ShippingModel.timestamp==date,
+    #         TransportModel.name==self.name
+    #     ).one()[0]
 
+class CategoryModel(db.Model):
+    __tablename__ = 'categories'
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
+                                                unique=True)
+    production: so.Mapped['ProductModel'] = so.relationship(
+                    back_populates='category')
+    def __repr__(self):
+        return '<Category {}>'.format(self.name)
+    
+    # @hybrid_method
+    # def monthly_plan_by_factory(factory_id: int, date: datetime) -> int:
+    #     return ShippingModel.query(
+    #         func.sum(ShippingModel.monthly_plan)
+    #     ).join(ProductModel, ShippingModel.product_id==ProductModel.id
+    #     ).join(
+    #         CategoryModel, ProductModel.category_id==CategoryModel.id
+    #     ).filter(
+    #         ShippingModel.shipping_point_id==factory_id,
+    #         CategoryModel.name==category[0]
+    #     ).one()[0]
 
 class FactoryModel(db.Model):
     __tablename__ = 'factories'
@@ -110,57 +131,59 @@ class FactoryModel(db.Model):
     def __repr__(self):
         return '<ShippingPoint {}>'.format(self.name)
     
-    @hybrid_property
-    def monthly_plan(self, date: datetime) -> int:
+    @hybrid_method
+    def sum_plan(self, from_date: datetime, to_date: datetime) -> int:
         return ShippingModel.query(
-            func.sum(ShippingModel.monthly_plan)
+            func.sum(ShippingModel.shipping_plan)
         ).filter(
             ShippingModel.shipping_point==self,
-            ShippingModel.timestamp == date,
+            ShippingModel.timestamp>=from_date,
+            ShippingModel.timestamp<=to_date,
         ).one()[0]
     
-    @hybrid_property
-    def transport_used(self, date: datetime) -> List[TransportModel]:
-        return (FactoryModel.query(
-            FactoryModel, ShippingModel, TransportModel
-        ).distinct(
-            ShippingModel.transport_id
-        ).filter(
-            ShippingModel.shipping_point==self
-        ).filter(
-            ShippingModel.transport_id==TransportModel.id
-        ).filter(
-            ShippingModel.timestamp==datetime
-        ).all())
-
-class FactorySchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = FactoryModel
-        include_fk = True
-
-
-
-class CategoryModel(db.Model):
-    __tablename__ = 'categories'
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    name: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
-                                                unique=True)
-    production: so.Mapped['ProductModel'] = so.relationship(
-                    back_populates='category')
-    def __repr__(self):
-        return '<Category {}>'.format(self.name)
-    
-    @hybrid_property
-    def monthly_plan_by_factory(factory: FactoryModel, date: datetime) -> int:
+    @hybrid_method
+    def sum_done(self, from_date: datetime, to_date: datetime) -> int:
         return ShippingModel.query(
-            func.sum(ShippingModel.monthly_plan)
-        ).join(ProductModel, ShippingModel.product_id==ProductModel.id
-        ).join(
-            CategoryModel, ProductModel.category_id==CategoryModel.id
+            func.sum(ShippingModel.shipping_done)
         ).filter(
-            ShippingModel.shipping_point==factory,
-            CategoryModel.name==category[0]
+            ShippingModel.shipping_point==self,
+            ShippingModel.timestamp>=from_date,
+            ShippingModel.timestamp<=to_date,
         ).one()[0]
+    
+    @hybrid_method
+    def daily_plan(self, date: datetime) -> int:
+        return ShippingModel.query(ShippingModel.shipping_plan).filter(
+            ShippingModel.timestamp == date
+        ).one()[0]
+    
+    @hybrid_method
+    def daily_done(self, date: datetime) -> int:
+        return ShippingModel.query(ShippingModel.shipping_done).filter(
+            ShippingModel.timestamp == date
+        ).one()[0]
+    
+    # TODO
+    # @hybrid_method
+    # def transport_used(self, from_date: datetime, to_date: datetime) -> List[TransportModel]:
+    #     return (FactoryModel.query(
+    #         FactoryModel, ShippingModel, TransportModel
+    #     ).distinct(
+    #         ShippingModel.transport_id
+    #     ).filter(
+    #         ShippingModel.shipping_point==self
+    #     ).filter(
+    #         ShippingModel.transport_id==TransportModel.id
+    #     ).filter(
+    #         ShippingModel.timestamp>=from_date
+    #     ).filter(
+    #         ShippingModel.timestamp<=to_date
+    #     ).all())
+    
+    # TODO
+    # @hybrid_method
+    # def product_category_produced(self, from_date: datetime, to_date: datetime) -> List[ProductCategory]:
+    #     pass
     
 
 
