@@ -1,6 +1,6 @@
 from app import db
 from typing import Iterable
-from ..models.category import CategoryModel
+from ..entities.models import CategoryModel
 
 #   TODO catch ERRORS где надо
 

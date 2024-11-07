@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from app.config import Config, swagger_config
 from flasgger import Swagger
+from flask_marshmallow import Marshmallow
 from app.utils.db_utils import upload_regions
 import sqlalchemy as sa
 import sqlalchemy.orm as so
@@ -15,6 +16,7 @@ app.config.from_object(Config)
 app.json.sort_keys = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+ma = Marshmallow(app)
 swagger = Swagger(app, config=swagger_config)
 
 from app import routes

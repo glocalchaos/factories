@@ -1,8 +1,7 @@
 from app import db
 from typing import Dict, List
 from flask_sqlalchemy.session import Session
-from ..models.region import RegionModel
-from ..models.factory import FactoryModel
+from ..entities.models import RegionModel, FactoryModel
 
 
 # TODO catch ERRORS где надо

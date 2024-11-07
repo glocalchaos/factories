@@ -1,6 +1,6 @@
 from app import db
 from typing import Mapping, Iterable
-from ..models.product import ProductModel
+from ..entities.models import ProductModel
 from .category_repository import CategoryRepository
 
 class ProductRepository:

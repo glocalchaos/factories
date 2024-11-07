@@ -70,6 +70,7 @@ def upload_file():
 
 # ! TODO Swagger
 
+'''
 # ! TODO фильтрация по дате
 @app.route('/factoriesByRegions', methods=['GET'])
 def get_regions():
@@ -107,3 +108,8 @@ def get_regions():
         })
 
     return jsonify(result)
+'''
+
+@app.route('/factories/get_all', methods=['GET'])
+def get_all():
+    pass

@@ -1,6 +1,6 @@
 from app import db
 from typing import Iterable
-from ..models.transport import TransportModel
+from ..entities.models import TransportModel
 
 
 class TransportRepository:

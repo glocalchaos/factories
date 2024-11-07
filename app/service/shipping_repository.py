@@ -4,11 +4,7 @@ from ..utils.parser_utils import ShippingRecordType
 from collections import namedtuple
 from datetime import datetime
 from .product_repository import ProductRepository
-from ..models.shipping import ShippingModel
-from ..models.transport import TransportModel
-from ..models.factory import FactoryModel
-from ..models.product import ProductModel
-from ..models.category import CategoryModel
+from ..entities.models import ShippingModel, TransportModel, FactoryModel, ProductModel, CategoryModel
 from .transport_repository import TransportRepository
 from .factory_repository import FactoryRepository
 

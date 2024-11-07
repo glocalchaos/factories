@@ -23,8 +23,7 @@ def load_preset(filepath: str):
 
 def upload_regions(db: SQLAlchemy,
                    filepath: str = "app/data/regionswithfactories.json"):
-    from ..models.region import RegionModel
-    from ..models.factory import FactoryModel
+    from ..entities.models import RegionModel, FactoryModel
 
     regions = load_preset(filepath)
     session = db.session

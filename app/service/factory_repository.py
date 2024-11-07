@@ -1,10 +1,6 @@
 from app import db
 from typing import Mapping, Iterable, List
-from ..models.factory import FactoryModel
-from ..models.transport import TransportModel
-from ..models.shipping import ShippingModel
-from ..models.category import CategoryModel
-from ..models.product import ProductModel
+from ..entities.models import FactoryModel, TransportModel, ShippingModel, CategoryModel, ProductModel
 from .region_repository import RegionRepository
 
 class FactoryRepository:
