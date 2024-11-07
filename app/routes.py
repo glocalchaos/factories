@@ -1,6 +1,7 @@
 from app import app
 from app import db
 from os import path
+from flasgger import swag_from
 from flask import request, redirect, url_for, jsonify
 from .service.shipping_repository import ShippingRepository
 from .service.product_repository import ProductRepository
@@ -21,28 +22,15 @@ def get_db_session():
     finally:
         session.close()
 
-@app.route('/')
-@app.route('/index')
-def index():
-    return "Hello world"
+# @app.route('/')
+# @app.route('/index')
+# def index():
+#     return "Hello world"
 
 
 @app.route('/uploadXlsData', methods=['POST'])
+@swag_from('swagger/upload_xls.yaml')
 def upload_file():
-    """Upload .xls file to database
-    ---
-    parameters:
-        - name: file
-          required: true
-          in: formData
-          type: file
-
-    responses:
-        200:
-            description: Data from file fully uploaded
-        400:
-            description: File not provided
-    """
     xls_file = request.files['file']
     if xls_file.filename == '':
         return redirect(url_for('index'), code=400)
@@ -68,11 +56,9 @@ def upload_file():
 
     return redirect(url_for('index'), code=200)
 
-# ! TODO Swagger
-
 '''
 # ! TODO фильтрация по дате
-@app.route('/factoriesByRegions', methods=['GET'])
+@app.route('/factoriesByRegions/', methods=['GET'])
 def get_regions():
     regions = RegionRepository.get_all_regions()
     result = []
@@ -110,6 +96,22 @@ def get_regions():
     return jsonify(result)
 '''
 
-@app.route('/factories/get_all', methods=['GET'])
+@app.route('/factories/get_all/', methods=['GET'])
+@swag_from('swagger/factories_get_all.yaml')
 def get_all():
+    pass
+
+@app.route('/factories/<factory_name>/')
+@swag_from('swagger/factory.yaml')
+def factory():
+    pass
+
+@app.route('/factories/<factory_name>/transport/')
+@swag_from('swagger/factory_transport.yaml')
+def factory_transport():
+    pass
+
+@app.route('/factories/<factory_name>/product_category/')
+@swag_from('swagger/factory_product_category.yaml')
+def factory_product_category():
     pass

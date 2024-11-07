@@ -1,0 +1,12 @@
+summary: "Upload .xls file to database"
+description: "Upload Excel file with shipments data"
+parameters:
+    - name: file
+      required: true
+      in: formData
+      type: file
+responses:
+    200:
+        description: Data from file fully uploaded
+    400:
+        description: File not provided

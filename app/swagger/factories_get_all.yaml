@@ -1,0 +1,28 @@
+summary: "Get all data by regions"
+description: "Returns full statistics for all factories"
+produces:
+- "application/json"
+parameters:
+  - name: period
+    in: query
+    type: string
+    enum: ['daily', 'range']
+    required: false
+  - name: from
+    in: query
+    type: date
+    required: false
+  - name: to
+    in: query
+    type: date
+    required: false
+  - name: factory_type
+    in: query
+    type: string
+    enum: ['переработка', 'второй']
+    required: false
+responses:
+  200:
+    description: Successful Return
+  400:
+    description: Failed Query

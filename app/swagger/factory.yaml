@@ -1,0 +1,22 @@
+summary: "Get data for factory"
+description: "Get planned and done val. of shipments for <factory_name>"
+produces:
+- "application/json"
+parameters:
+  - name: factory_name
+    in: path
+    type: string
+    required: true
+  - name: from
+    in: query
+    type: date
+    required: false
+  - name: to
+    in: query
+    type: date
+    required: false
+responses:
+  200:
+    description: Successful Return
+  404:
+    description: Factory Not Found
