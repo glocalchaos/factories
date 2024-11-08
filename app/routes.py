@@ -7,7 +7,9 @@ from .service.shipping_repository import ShippingRepository
 from .service.product_repository import ProductRepository
 from .service.factory_repository import FactoryRepository
 from .service.region_repository import RegionRepository
-
+from .entities.models import FactoryModel
+from .entities.schemas import planfact_schema, factory_schema
+from .utils import query_utils
 import os
 from pathlib import Path
 
@@ -103,17 +105,33 @@ def get_all():
 
 @app.route('/factories/<string:factory_name>/')
 @swag_from('swagger/factory.yaml')
-def factory():
-    print(factory_name)
-    args = request.args
-    return args
+def factory(factory_name):
+    
+    session = db.session
+    factory = session.query(
+        FactoryModel
+    ).filter(
+        FactoryModel.name == factory_name
+    ).scalar()
+    if factory is None:
+        # !TODO handle if factory not found 404 error
+        return 
+
+    from_date, to_date = query_utils.get_sum_period(request.args)
+    session = db.session
+    
+    # !TODO handle if data not found
+    daily_data = planfact_schema.load({"plan": factory.daily_plan(to_date), "fact": factory.daily_fact(to_date)})
+    sum_data = planfact_schema.load({"plan": factory.sum_plan(to_date), "fact": factory.sum_fact(from_date, to_date)})
+
+    return factory_schema.dump({"name": factory_name, "daily": daily_data, "sum": sum_data})
 
 @app.route('/factories/<factory_name>/transport/')
 @swag_from('swagger/factory_transport.yaml')
-def factory_transport():
+def factory_transport(factory_name):
     pass
 
 @app.route('/factories/<factory_name>/product_category/')
 @swag_from('swagger/factory_product_category.yaml')
-def factory_product_category():
+def factory_product_category(factory_name):
     pass

@@ -1,5 +1,5 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
-from models import ShippingModel, FactoryModel
+from .models import ShippingModel, FactoryModel
 from marshmallow import fields, Schema, post_dump
 from marshmallow.fields import Nested
 
@@ -16,6 +16,8 @@ class PlanVsFactSchema(Schema):
     def remove_empty_fields(self, data, **kwargs):
         return {k: v for k, v in data.items() if v not in [None, ""]}
 
+planfact_schema = PlanVsFactSchema()
+
 class FactorySchema(ma.SQLAlchemySchema):#ma.SQLAlchemySchema):
     # class Meta:
         # model = FactoryModel
@@ -26,3 +28,5 @@ class FactorySchema(ma.SQLAlchemySchema):#ma.SQLAlchemySchema):
     
     daily = Nested(PlanVsFactSchema)
     sum = Nested(PlanVsFactSchema)
+
+factory_schema = FactorySchema()

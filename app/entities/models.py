@@ -131,19 +131,29 @@ class FactoryModel(db.Model):
     def __repr__(self):
         return '<ShippingPoint {}>'.format(self.name)
     
+    # МЕСЯЧНЫЙ план, ничего не суммируется
     @hybrid_method
-    def sum_plan(self, from_date: datetime, to_date: datetime) -> int:
-        return ShippingModel.query(
-            func.sum(ShippingModel.shipping_plan)
+    def sum_plan(self, date: datetime) -> int:
+        return db.session.query(
+            ShippingModel.shipping_plan
         ).filter(
             ShippingModel.shipping_point==self,
-            ShippingModel.timestamp>=from_date,
-            ShippingModel.timestamp<=to_date,
-        ).one()[0]
-    
+            ShippingModel.timestamp>=date,
+            ShippingModel.timestamp<=date,
+        ).first()[0]
+    # @hybrid_method
+    # def sum_plan(self, from_date: datetime, to_date: datetime) -> int:
+    #     return ShippingModel.query(
+    #         func.sum(ShippingModel.shipping_plan)
+    #     ).filter(
+    #         ShippingModel.shipping_point==self,
+    #         ShippingModel.timestamp>=from_date,
+    #         ShippingModel.timestamp<=to_date,
+    #     ).one()[0]
+
     @hybrid_method
-    def sum_done(self, from_date: datetime, to_date: datetime) -> int:
-        return ShippingModel.query(
+    def sum_fact(self, from_date: datetime, to_date: datetime) -> int:
+        return db.session.query(
             func.sum(ShippingModel.shipping_done)
         ).filter(
             ShippingModel.shipping_point==self,
@@ -153,15 +163,15 @@ class FactoryModel(db.Model):
     
     @hybrid_method
     def daily_plan(self, date: datetime) -> int:
-        return ShippingModel.query(ShippingModel.shipping_plan).filter(
+        return db.session.query(ShippingModel.shipping_plan).filter(
             ShippingModel.timestamp == date
-        ).one()[0]
+        ).first()[0]
     
     @hybrid_method
-    def daily_done(self, date: datetime) -> int:
-        return ShippingModel.query(ShippingModel.shipping_done).filter(
+    def daily_fact(self, date: datetime) -> int:
+        return db.session.query(ShippingModel.shipping_done).filter(
             ShippingModel.timestamp == date
-        ).one()[0]
+        ).first()[0]
     
     # TODO
     # @hybrid_method
