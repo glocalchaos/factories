@@ -22,4 +22,17 @@ def get_sum_period(args: Dict[str, str]) -> Tuple[datetime, datetime]:
 
     return from_date, to_date
 
+
+def get_period(args: Dict[str, str]) -> Tuple[datetime, datetime]:
+    # if 'period' in args:
+        
+    # else:
+    pass
+
     
+
+def get_transport_type(args: Dict[str, str]):
+    pass
+
+def get_product_category_type(args: Dict[str, str]):
+    pass

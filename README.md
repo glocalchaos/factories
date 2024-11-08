@@ -128,7 +128,7 @@
 ```
 
 3) `factories/:factory_name/transport` - за все виды транспорта, накопительно к сегодняшнему дню
-
+Если даты не переданы то накопительно ко дню сегодняшнему
 `factories/:factory_name/transport?period=daily` - за день
 `factories/:factory_name/transport?period=range` - накопительно ко дню
 
@@ -152,9 +152,10 @@
 }
 ```
 4) `factories/:factory_name/product_category`
+Если даты не переданы то накопительно ко дню сегодняшнему
 
-`factories/:factory_name/transport?period=daily` - за день
-`factories/:factory_name/transport?period=range` - накопительно ко дню
+`factories/:factory_name/transport?period=daily` - за день (`to` либо сегодня)
+`factories/:factory_name/transport?period=range` - накопительно ко дню (дефолт - с начала месяца до сегодня)
 
 `factories/:factory_name/transport?transport_type=Автомобильный` - тип транспорта 
 `factories/:factory_name/transport?product_category=Светлые` - категория продукта 

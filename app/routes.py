@@ -126,10 +126,22 @@ def factory(factory_name):
 
     return factory_schema.dump({"name": factory_name, "daily": daily_data, "sum": sum_data})
 
+
 @app.route('/factories/<factory_name>/transport/')
 @swag_from('swagger/factory_transport.yaml')
 def factory_transport(factory_name):
-    pass
+    from_date, to_date = query_utils.get_period(request.args)
+    
+    session = db.session
+    factory = session.query(
+        FactoryModel
+    ).filter(
+        FactoryModel.name == factory_name
+    ).scalar()
+    if factory is None:
+        # !TODO handle if factory not found 404 error
+        return 
+
 
 @app.route('/factories/<factory_name>/product_category/')
 @swag_from('swagger/factory_product_category.yaml')
