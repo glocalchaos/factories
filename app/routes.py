@@ -2,7 +2,7 @@ from app import app
 from app import db
 from os import path
 from flasgger import swag_from
-from flask import request, redirect, url_for, jsonify
+from flask import request, redirect, url_for, jsonify, request
 from .service.shipping_repository import ShippingRepository
 from .service.product_repository import ProductRepository
 from .service.factory_repository import FactoryRepository
@@ -101,10 +101,12 @@ def get_regions():
 def get_all():
     pass
 
-@app.route('/factories/<factory_name>/')
+@app.route('/factories/<string:factory_name>/')
 @swag_from('swagger/factory.yaml')
 def factory():
-    pass
+    print(factory_name)
+    args = request.args
+    return args
 
 @app.route('/factories/<factory_name>/transport/')
 @swag_from('swagger/factory_transport.yaml')
