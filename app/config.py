@@ -6,9 +6,15 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'postgresql://postgres:postgres@localhost:5431'
-    UPLOAD_FOLDER = 'src/'
+    CACHE_TYPE = 'simple'  # You can choose other types like 'redis', 'memcached', etc.
+    CACHE_DEFAULT_TIMEOUT = 300  # Cache timeout in seconds
+    UPLOAD_FOLDER = 'src/' # '/opt/foresight/cabinet_back/uploads'
     JSON_AS_ASCII = False
-    # JSON_SORT_KEYS = False # ! removed in flask 2.3
+    ALLOWED_EXTENSIONS = {'xlsx'}
+    DATABASE_MODE = 'DIRECT' # DIRECT OR DOMAIN depending on authentithication mode
+    SERVERBASE_MODE = 'PYTHON' # PYTHON OR WSGI depending on server environment
+    DATABASE = '@kao-qas-db01.codm.gazprom.loc'
+    PORT = '5433'
 
 
 swagger_config = {

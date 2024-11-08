@@ -1,5 +1,6 @@
 from app import app
-from app import db
+# from app import db
+from .database import set_db_connection
 from os import path
 from flasgger import swag_from
 from flask import request, redirect, url_for, jsonify, request
@@ -31,30 +32,34 @@ def get_db_session():
 @app.route('/uploadXlsData', methods=['POST'])
 @swag_from('swagger/upload_xls.yaml')
 def upload_file():
-    xls_file = request.files['file']
-    if xls_file.filename == '':
-        return redirect(url_for('index'), code=400)
+    try:
+        db = set_db_connection()
+        xls_file = request.files['file']
+        if xls_file.filename == '':
+            return redirect(url_for('index'), code=400)
 
-    Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
+        Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
 
-    file_path = path.join(app.config['UPLOAD_FOLDER'], xls_file.filename)
-    xls_file.save(file_path)
+        file_path = path.join(app.config['UPLOAD_FOLDER'], xls_file.filename)
+        xls_file.save(file_path)
 
-    parser = excel_parser.Parser(file_path)
+        parser = excel_parser.Parser(file_path)
 
-    cur_datetime = parser.get_datetime()
+        cur_datetime = parser.get_datetime()
 
-    product_categories = parser.parse_products_categories()
-    for product_name, category_name in product_categories.items():
-        ProductRepository().upload_product(product_name, category_name)
+        product_categories = parser.parse_products_categories()
+        for product_name, category_name in product_categories.items():
+            ProductRepository().upload_product(product_name, category_name)
 
-    parsed_data = parser.parse_all()
-    for record in parsed_data:
-        ShippingRepository().upload_shipping(record, cur_datetime)
+        parsed_data = parser.parse_all()
+        for record in parsed_data:
+            ShippingRepository().upload_shipping(record, cur_datetime)
 
-    os.remove(file_path)
+        os.remove(file_path)
 
-    return redirect(url_for('index'), code=200)
+        return redirect(url_for('index'), code=200)
+    except:
+        return 
 
 '''
 # ! TODO фильтрация по дате
@@ -104,8 +109,8 @@ def get_all():
 @app.route('/factories/<string:factory_name>/')
 @swag_from('swagger/factory.yaml')
 def factory():
-    print(factory_name)
-    args = request.args
+    # print(factory_name)
+    # args = request.args
     return args
 
 @app.route('/factories/<factory_name>/transport/')
