@@ -98,9 +98,7 @@ class FactoryService:
             ShippingModel.shipping_point == factory
         )
 
-        # if transport_types:
         query = apply_shippings_transport_filter(query, transport_types)
-        # if products:
         query = apply_shippings_product_filter(query, products)
         
         return query.first()[0]

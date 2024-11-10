@@ -187,7 +187,6 @@ def factory_transport(factory_name):
 @app.route('/factories/<factory_name>/product_category/')
 @swag_from('swagger/factory_product_category.yaml')
 def factory_product_category(factory_name):
-    # ! TODO fix не работает фильтрация по транспорту!!!!!!
     factory = factory_service.get_by_name(factory_name)
     if factory is None:
         abort(404, description="Пункт отгрузки не найден")
@@ -221,17 +220,16 @@ def factory_product_category(factory_name):
     for category in shipped_categories:
         try:
             products = product_service.get_products_by_category(category)
-            # print(category.name, products) 
             category_details.append(PlanVsFactSchema().load({
                 "product_category":  category.name,
                 "plan": factory_service.sum_plan(factory, 
                                                  from_date, 
-                                                 [transport], 
+                                                 transport, 
                                                  products),
                 "fact": factory_service.sum_fact(factory,
                                                  from_date,
                                                  to_date,
-                                                 [transport],
+                                                 transport,
                                                  products)
             }))
         except Exception as e:
