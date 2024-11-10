@@ -4,7 +4,7 @@
 `factories/get_all?period=range`
 `factories/get_all?from=24.02.2024&to=24.02.2024` 
 Если даты не переданы то накопительно ко дню сегодняшнему
-Если некорретный заспрос, то данные отдаеются `factories/get_all`.
+Если некорретный заспрос, то данные отдаются `factories/get_all`.
 `factories/get_all?factory_type=переработка` - параметр отвечает за тип завода
 
 ```json

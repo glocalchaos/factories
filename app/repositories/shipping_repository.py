@@ -21,7 +21,7 @@ class ShippingRepository:
 
         factory_id = self._factory_repo.get_id_by_name(shippingRecord.shipping_point)
 
-        print(self._factory_repo.get_id_by_name(shippingRecord.shipping_point), shippingRecord.shipping_point)
+        # print(self._factory_repo.get_id_by_name(shippingRecord.shipping_point), shippingRecord.shipping_point)
         if factory_id is None:
             self._factory_repo.upload_factory(shippingRecord.shipping_point)
         session.add(ShippingModel(

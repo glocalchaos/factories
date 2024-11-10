@@ -5,7 +5,7 @@ from app.repositories.transport_repository import TransportRepository
 from app.services.utils import apply_shippings_product_filter, apply_shippings_transport_filter
 from sqlalchemy import func, extract
 
-from app.entities.models import CategoryModel, FactoryModel, ProductModel, ShippingModel, TransportModel
+from app.entities.models import CategoryModel, FactoryModel, ProductModel, RegionModel, ShippingModel, TransportModel
 from app import db
 
 class FactoryService:
@@ -27,6 +27,9 @@ class FactoryService:
         return self.factory_repository.get_by_name(name)
     def get_transport_by_name(self, name: str):
         return self.transport_repository.get_by_name(name)
+    
+    def get_factories_by_region(self, region: RegionModel) -> List[RegionModel]:
+        return self.factory_repository.get_by_region(region)
     
     # Месячный план
     def sum_plan(self, factory: FactoryModel, date: datetime,
@@ -60,7 +63,7 @@ class FactoryService:
                             extract("year", ShippingModel.timestamp) == date.year,
                             extract("month", ShippingModel.timestamp) == date.month
                 )
-        print(query) # & OTLADKA
+        # print(query) # & OTLADKA
         return query.scalar()
     
     # Факт накопительно за период
@@ -175,5 +178,5 @@ class FactoryService:
             )
         query = apply_shippings_transport_filter(query, transport_types)
         query = apply_shippings_product_filter(query, products)
-        print(query)
+        # print(query)
         return query.all()

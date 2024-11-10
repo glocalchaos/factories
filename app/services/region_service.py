@@ -1,5 +1,6 @@
-from typing import Dict, Iterable
+from typing import Dict, Iterable, List
 
+from app.entities.models import RegionModel
 from app.repositories.region_repository import RegionRepository
 
 
@@ -21,3 +22,6 @@ class RegionService:
                 regions_list[code] = name
             
         self.repository.upload_regions(regions_list)
+
+    def get_all(self) -> List[RegionModel]:
+        return self.repository.get_all_regions()

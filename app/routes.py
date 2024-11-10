@@ -5,10 +5,12 @@ from app.services.factory_service import FactoryService
 from app.services.product_service import ProductService
 from flasgger import swag_from
 from flask import request, redirect, url_for, jsonify, request, abort
+
+from app.services.region_service import RegionService
 from .repositories.shipping_repository import ShippingRepository
 from .repositories.product_repository import ProductRepository
 from .entities.models import FactoryModel
-from .entities.schemas import PlanVsFactSchema, planfact_schema, planfact_schemas, factory_schema, transport_schema
+from .entities.schemas import AllSchema, FactoryGeneralSchema, NameFactSchema, PlanVsFactSchema, RegionSchema, planfact_schema, planfact_schemas, factory_schema, transport_schema
 from .utils import query_utils
 import os
 from pathlib import Path
@@ -22,6 +24,8 @@ from . import excel_parser
 
 factory_service = FactoryService()
 product_service = ProductService()
+region_service = RegionService()
+
 @app.route('/uploadXlsData', methods=['POST'])
 @swag_from('swagger/upload_xls.yaml')
 def upload_file():
@@ -90,10 +94,87 @@ def get_regions():
     return jsonify(result)
 '''
 
+# ! Тут нет фильтрации по транспорту/категории, т. к. в ридми её нет + нет смысла?? мы и так фильтруем
 @app.route('/factories/get_all/', methods=['GET'])
 @swag_from('swagger/factories_get_all.yaml')
 def get_all():
-    pass
+    from_date, to_date = query_utils.get_period(request.args)
+    transport_type = query_utils.get_transport_type(request.args)
+    product_category_name = query_utils.get_product_category(request.args)
+
+    regions = region_service.get_all()
+
+    result_schema = AllSchema()
+    regions_schema_list = []
+
+    for region in regions:
+        factories_schema_list = []
+        factories = factory_service.get_factories_by_region(region)
+        for factory in factories:
+            categories = factory_service.get_shipped_categories_by_factory(factory, 
+                                                                   from_date, 
+                                                                   to_date)
+            transports = factory_service.get_used_transports_by_factory(factory,
+                                                                        from_date=from_date,
+                                                                        to_date=to_date)
+            categories_schema_list = []
+            for category in categories:
+                try:
+                    categories_schema_list.append(NameFactSchema().load({
+                                                    "name":category.name,
+                                                    "value":factory_service.sum_fact(factory,
+                                                            from_date,
+                                                            to_date, # TODO fix не выдает по oil_type
+                                                            products=product_service.get_products_by_category(category))}))
+                except Exception:
+                    continue
+            
+            transports_schema_list = []
+            for transport in transports:
+                try:
+                    transports_schema_list.append(NameFactSchema().load({
+                                                     "name": transport.name,
+                                                     "value": factory_service.sum_fact(factory,
+                                                             from_date,
+                                                             to_date,
+                                                             transport_types=[transport])
+                                                }))
+                except Exception as e:
+                    continue
+            
+            try:
+                factories_schema_list.append(FactoryGeneralSchema().load({
+                                                    "name": factory.name,
+                                                    "value": factory_service.sum_fact(
+                                                        factory=factory,
+                                                        from_date=from_date,
+                                                        to_date=to_date,
+                                                        
+                                                    ),
+                                                    "oil_type": categories_schema_list,
+                                                    "transport_type": transports_schema_list
+                                                })
+                                            )
+            except Exception:
+                continue
+        try:
+            regions_schema_list.append(RegionSchema().load({
+                "region": region.name,
+                "code": region.code,
+                "factories": factories_schema_list
+            }
+            ))
+        except Exception as e:
+                continue
+        
+    try:
+        # result_schema.load(regions_info=regions_schema_list)
+        return result_schema.dump({
+                "regions_info": regions_schema_list,
+            })
+    except Exception as e:
+        abort(404, "Отправления не найдены")
+            
 
 @app.route('/factories/<string:factory_name>/')
 @swag_from('swagger/factory.yaml')
@@ -174,7 +255,6 @@ def factory_transport(factory_name):
                                                  products)
             }))
         except Exception as e:
-            print("exc", e)
             continue
     # Не надо??
     if len(transport_details) == 0:
@@ -233,7 +313,7 @@ def factory_product_category(factory_name):
                                                  products)
             }))
         except Exception as e:
-            print("exc", e.__traceback__.tb_lineno, e.__traceback__.tb_next.tb_next.tb_lineno)
+            # print("exc", e.__traceback__.tb_lineno, e.__traceback__.tb_next.tb_next.tb_lineno)
             continue
     # Не надо??
     if len(category_details) == 0:

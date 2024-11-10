@@ -1,6 +1,6 @@
 from app import db
 from typing import Dict, Mapping, Iterable, List
-from ..entities.models import FactoryModel, TransportModel, ShippingModel, CategoryModel, ProductModel
+from ..entities.models import FactoryModel, RegionModel, TransportModel, ShippingModel, CategoryModel, ProductModel
 from .region_repository import RegionRepository
 
 class FactoryRepository:
@@ -48,6 +48,13 @@ class FactoryRepository:
         ).filter(
             FactoryModel.id == id
         ).scalar()
+    
+    def get_by_region(self, region: RegionModel) -> List[RegionModel]:
+        return db.session.query(
+            FactoryModel
+        ).filter(
+            FactoryModel.region == region
+        ).all()
     
     def exists_by_id(self, id: int) -> bool:
         return self.get_by_id(id) is not None

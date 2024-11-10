@@ -127,7 +127,8 @@ class FactoryModel(db.Model):
 
     shippings : so.Mapped['ShippingModel'] = so.relationship(
                     back_populates='shipping_point')
-
+    region: so.Mapped['RegionModel'] = so.relationship(
+                    back_populates='shipping_points')
     
     def __repr__(self):
         return '<ShippingPoint {}>'.format(self.name)
@@ -212,17 +213,12 @@ class RegionModel(db.Model):
     code: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
                                                 unique=True, nullable=False)
-    shipping_points: so.Mapped[List['FactoryModel']] = so.relationship()
+    # shipping_points: so.Mapped[List['FactoryModel']] = so.relationship()
+    shipping_points: so.Mapped['FactoryModel'] = so.relationship(
+                    back_populates='region')
 
     def __repr__(self):
         return '<Region {}>'.format(self.name)
-    
-class RegionSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = RegionModel
-    code = ma.auto_field()
-    name = ma.auto_field()
-    shipping_points = ma.auto_field()
 
 
 
