@@ -24,16 +24,18 @@ class ShippingModel(db.Model):
     monthly_plan: so.Mapped[Optional[float]] = so.mapped_column()
     shipping_plan: so.Mapped[Optional[float]] = so.mapped_column()
     shipping_done: so.Mapped[Optional[float]] = so.mapped_column()
-    notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+    notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256)) # TODO убрать??
 
 
     shipping_point: so.Mapped['FactoryModel'] = so.relationship(
                     back_populates='shippings')
-    # transport: so.Mapped['TransportModel'] = so.relationship(
-    #                 back_populates='shippings_involved')
+    transport: so.Mapped['TransportModel'] = so.relationship(
+                    back_populates='shippings_involved')
+    product: so.Mapped['ProductModel'] = so.relationship(
+                    back_populates='shippings')
 
     def __repr__(self):
-        return '<Shipping {}>'.format(self.name)
+        return '<Shipping {}>'.format(self.product.name)
     
     # @hybrid_method
     # def monthly_plan_by_factory(self, factory_id : int, date: datetime) -> int:
@@ -73,9 +75,8 @@ class TransportModel(db.Model):
     name: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
                                                 unique=True)
     
-    # shippings_involved: so.Mapped[list['ShippingModel']] = so.relationship(
-    #                 "ShippingModel",
-    #                 back_populates='transport')
+    shippings_involved: so.Mapped['ShippingModel'] = so.relationship(
+                    back_populates='transport')
     
     def __repr__(self):
         return '<Transport {}>'.format(self.name)
@@ -131,47 +132,38 @@ class FactoryModel(db.Model):
     def __repr__(self):
         return '<ShippingPoint {}>'.format(self.name)
     
-    # МЕСЯЧНЫЙ план, ничего не суммируется
-    @hybrid_method
-    def sum_plan(self, date: datetime) -> int:
-        return db.session.query(
-            ShippingModel.shipping_plan
-        ).filter(
-            ShippingModel.shipping_point==self,
-            ShippingModel.timestamp>=date,
-            ShippingModel.timestamp<=date,
-        ).first()[0]
+    # # МЕСЯЧНЫЙ план, ничего не суммируется
     # @hybrid_method
-    # def sum_plan(self, from_date: datetime, to_date: datetime) -> int:
-    #     return ShippingModel.query(
-    #         func.sum(ShippingModel.shipping_plan)
+    # def sum_plan(self, date: datetime) -> int:
+    #     return db.session.query(
+    #         ShippingModel.shipping_plan
+    #     ).filter(
+    #         ShippingModel.shipping_point==self,
+    #         ShippingModel.timestamp>=date,
+    #         ShippingModel.timestamp<=date,
+    #     ).first()[0]
+
+    # @hybrid_method
+    # def sum_fact(self, from_date: datetime, to_date: datetime) -> int:
+    #     return db.session.query(
+    #         func.sum(ShippingModel.shipping_done)
     #     ).filter(
     #         ShippingModel.shipping_point==self,
     #         ShippingModel.timestamp>=from_date,
     #         ShippingModel.timestamp<=to_date,
     #     ).one()[0]
-
-    @hybrid_method
-    def sum_fact(self, from_date: datetime, to_date: datetime) -> int:
-        return db.session.query(
-            func.sum(ShippingModel.shipping_done)
-        ).filter(
-            ShippingModel.shipping_point==self,
-            ShippingModel.timestamp>=from_date,
-            ShippingModel.timestamp<=to_date,
-        ).one()[0]
     
-    @hybrid_method
-    def daily_plan(self, date: datetime) -> int:
-        return db.session.query(ShippingModel.shipping_plan).filter(
-            ShippingModel.timestamp == date
-        ).first()[0]
+    # @hybrid_method
+    # def daily_plan(self, date: datetime) -> int:
+    #     return db.session.query(ShippingModel.shipping_plan).filter(
+    #         ShippingModel.timestamp == date
+    #     ).first()[0]
     
-    @hybrid_method
-    def daily_fact(self, date: datetime) -> int:
-        return db.session.query(ShippingModel.shipping_done).filter(
-            ShippingModel.timestamp == date
-        ).first()[0]
+    # @hybrid_method
+    # def daily_fact(self, date: datetime) -> int:
+    #     return db.session.query(ShippingModel.shipping_done).filter(
+    #         ShippingModel.timestamp == date
+    #     ).first()[0]
     
     # TODO
     # @hybrid_method
@@ -207,9 +199,11 @@ class ProductModel(db.Model):
     
     category: so.Mapped['CategoryModel'] = so.relationship(
                     back_populates='production')
+    shippings: so.Mapped['ShippingModel'] = so.relationship(
+                    back_populates='product')
     
     def __repr__(self):
-        return '<ShippingPoint {}>'.format(self.name)
+        return '<ProductModel {}>'.format(self.name)
     
 
 

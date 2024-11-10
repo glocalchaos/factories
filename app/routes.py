@@ -1,35 +1,27 @@
 from app import app
 from app import db
 from os import path
+from app.services.factory_service import FactoryService
+from app.services.product_service import ProductService
 from flasgger import swag_from
-from flask import request, redirect, url_for, jsonify, request
-from .service.shipping_repository import ShippingRepository
-from .service.product_repository import ProductRepository
-from .service.factory_repository import FactoryRepository
-from .service.region_repository import RegionRepository
+from flask import request, redirect, url_for, jsonify, request, abort
+from .repositories.shipping_repository import ShippingRepository
+from .repositories.product_repository import ProductRepository
 from .entities.models import FactoryModel
-from .entities.schemas import planfact_schema, factory_schema
+from .entities.schemas import PlanVsFactSchema, planfact_schema, planfact_schemas, factory_schema, transport_schema
 from .utils import query_utils
 import os
 from pathlib import Path
 
 from . import excel_parser
 
-def get_db_session():
-    session = session
-    try:
-        yield session
-    except Exception:
-        session.rollback()
-    finally:
-        session.close()
-
 # @app.route('/')
 # @app.route('/index')
 # def index():
 #     return "Hello world"
 
-
+factory_service = FactoryService()
+product_service = ProductService()
 @app.route('/uploadXlsData', methods=['POST'])
 @swag_from('swagger/upload_xls.yaml')
 def upload_file():
@@ -106,44 +98,149 @@ def get_all():
 @app.route('/factories/<string:factory_name>/')
 @swag_from('swagger/factory.yaml')
 def factory(factory_name):
-    
-    session = db.session
-    factory = session.query(
-        FactoryModel
-    ).filter(
-        FactoryModel.name == factory_name
-    ).scalar()
+    factory = factory_service.get_by_name(factory_name)
     if factory is None:
-        # !TODO handle if factory not found 404 error
-        return 
-
+        abort(404, description="Пункт отгрузки не найден")
     from_date, to_date = query_utils.get_sum_period(request.args)
-    session = db.session
-    
-    # !TODO handle if data not found
-    daily_data = planfact_schema.load({"plan": factory.daily_plan(to_date), "fact": factory.daily_fact(to_date)})
-    sum_data = planfact_schema.load({"plan": factory.sum_plan(to_date), "fact": factory.sum_fact(from_date, to_date)})
+    transport_type_name = query_utils.get_transport_type(request.args)
+    product_category_name = query_utils.get_product_category(request.args)
 
-    return factory_schema.dump({"name": factory_name, "daily": daily_data, "sum": sum_data})
+    products = None
+    transport = None
+    if product_category_name is not None:
+        products = product_service.get_products_by_category_name(product_category_name)
+    if transport_type_name is not None:
+        transport = [factory_service.get_transport_by_name(transport_type_name)]
+
+    try:
+        daily_data = planfact_schema.load({"plan": factory_service.daily_plan(factory, 
+                                                                              to_date, 
+                                                                              transport, 
+                                                                              products), 
+                                            "fact": factory_service.daily_fact(factory, 
+                                                                               to_date, 
+                                                                               transport, 
+                                                                               products)})
+        sum_data = planfact_schema.load({"plan": factory_service.sum_plan(factory, to_date, transport, products), 
+                                         "fact": factory_service.sum_fact(factory, from_date, to_date, transport, products)})
+    except Exception as e:
+        abort(404, "Поставки не найдены")
+
+    return factory_schema.dump({"factory_name": factory_name, "daily": daily_data, "sum": sum_data})
 
 
 @app.route('/factories/<factory_name>/transport/')
 @swag_from('swagger/factory_transport.yaml')
-def factory_transport(factory_name):
-    from_date, to_date = query_utils.get_period(request.args)
-    
-    session = db.session
-    factory = session.query(
-        FactoryModel
-    ).filter(
-        FactoryModel.name == factory_name
-    ).scalar()
+def factory_transport(factory_name):    
+    factory = factory_service.get_by_name(factory_name)
     if factory is None:
-        # !TODO handle if factory not found 404 error
-        return 
+        abort(404, description="Пункт отгрузки не найден")
+    
+    from_date, to_date = query_utils.get_period(request.args)
+    transport_type = query_utils.get_transport_type(request.args)
+    product_category_name = query_utils.get_product_category(request.args)
 
+    products = None
+    transport = None
+    if product_category_name is not None:
+        try:
+            products = product_service.get_products_by_category_name(product_category_name)    
+        except Exception:
+            abort(404, description="Отгрузки с данной категорией не найдены")
+    if transport_type is not None:
+        transport = [factory_service.get_transport_by_name(transport_type)]
+    used_transport = factory_service.get_used_transports_by_factory(factory, 
+                                                                   from_date, 
+                                                                   to_date, 
+                                                                   transport,
+                                                                   products)
+
+    if len(used_transport) == 0:
+        abort(404, description="Поставки не найдены")
+
+    transport_details = []
+    for transport in used_transport:
+        try:
+            transport_details.append(PlanVsFactSchema().load({
+                "transport_type": transport.name,
+                "plan": factory_service.sum_plan(factory, 
+                                                 from_date, 
+                                                 [transport], 
+                                                 products),
+                "fact": factory_service.sum_fact(factory,
+                                                 from_date,
+                                                 to_date,
+                                                 [transport],
+                                                 products)
+            }))
+        except Exception as e:
+            print("exc", e)
+            continue
+    # Не надо??
+    if len(transport_details) == 0:
+        abort(404, description="Поставки не найдены.")
+
+    
+    return transport_schema.dump({"factory_name": factory_name,
+                                  "transports": transport_details})
 
 @app.route('/factories/<factory_name>/product_category/')
 @swag_from('swagger/factory_product_category.yaml')
 def factory_product_category(factory_name):
-    pass
+    # ! TODO fix не работает фильтрация по транспорту!!!!!!
+    factory = factory_service.get_by_name(factory_name)
+    if factory is None:
+        abort(404, description="Пункт отгрузки не найден")
+
+    from_date, to_date = query_utils.get_period(request.args)
+    transport_type = query_utils.get_transport_type(request.args)
+    product_category_name = query_utils.get_product_category(request.args)
+
+    products = None
+    transport = None
+    if product_category_name is not None:
+        try:
+            products = product_service.get_products_by_category_name(product_category_name)    
+        except Exception:
+            abort(404, description="Отгрузки с данной категорией не найдены")
+
+    if transport_type is not None:
+        transport = [factory_service.get_transport_by_name(transport_type)]
+
+    shipped_categories = factory_service.get_shipped_categories_by_factory(factory, 
+                                                                   from_date, 
+                                                                   to_date, 
+                                                                   transport,
+                                                                   products)
+
+    if len(shipped_categories) == 0:
+        abort(404, description="Поставки не найдены")
+
+    
+    category_details = []
+    for category in shipped_categories:
+        try:
+            products = product_service.get_products_by_category(category)
+            # print(category.name, products) 
+            category_details.append(PlanVsFactSchema().load({
+                "product_category":  category.name,
+                "plan": factory_service.sum_plan(factory, 
+                                                 from_date, 
+                                                 [transport], 
+                                                 products),
+                "fact": factory_service.sum_fact(factory,
+                                                 from_date,
+                                                 to_date,
+                                                 [transport],
+                                                 products)
+            }))
+        except Exception as e:
+            print("exc", e.__traceback__.tb_lineno, e.__traceback__.tb_next.tb_next.tb_lineno)
+            continue
+    # Не надо??
+    if len(category_details) == 0:
+        abort(404, description="Поставки не найдены.")
+
+    
+    return transport_schema.dump({"factory_name": factory_name,
+                                  "transports": category_details})

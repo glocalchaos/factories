@@ -24,15 +24,39 @@ def get_sum_period(args: Dict[str, str]) -> Tuple[datetime, datetime]:
 
 
 def get_period(args: Dict[str, str]) -> Tuple[datetime, datetime]:
-    # if 'period' in args:
+    if 'period' in args and args['period'] == 'daily':
+        # if args['period'] == 'daily':
+        if 'to' in args:
+            return (get_query_date(args['to']).replace(hour=0, 
+                                                     minute=0, 
+                                                     second=0, 
+                                                     microsecond=0), 
+                    get_query_date(args['to']).replace(hour=23, 
+                                                   minute=59, 
+                                                   second=59, 
+                                                   microsecond=59))
+        else:
+            return (datetime.datetime.now().replace(hour=0, 
+                                                     minute=0, 
+                                                     second=0, 
+                                                     microsecond=0), 
+                    datetime.datetime.now().replace(hour=23, 
+                                                   minute=59, 
+                                                   second=59, 
+                                                   microsecond=59))
         
-    # else:
-    pass
+    return get_sum_period(args)
 
     
 
 def get_transport_type(args: Dict[str, str]):
-    pass
+    if 'transport_type' in args:
+        return args['transport_type']
+    else:
+        return None
 
-def get_product_category_type(args: Dict[str, str]):
-    pass
+def get_product_category(args: Dict[str, str]):
+    if 'product_category' in args:
+        return args['product_category']
+    else:
+        return None

@@ -36,3 +36,7 @@ class TransportRepository:
         session = db.session
         t = session.query(TransportModel).filter(TransportModel.name == name).scalar()
         return t.id
+    def get_by_name(self, name: str) -> int:
+        session = db.session
+        t = session.query(TransportModel).filter(TransportModel.name == name).scalar()
+        return t

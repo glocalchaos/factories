@@ -17,16 +17,22 @@ class PlanVsFactSchema(Schema):
         return {k: v for k, v in data.items() if v not in [None, ""]}
 
 planfact_schema = PlanVsFactSchema()
+planfact_schemas = PlanVsFactSchema(many=True)
 
 class FactorySchema(ma.SQLAlchemySchema):#ma.SQLAlchemySchema):
     # class Meta:
         # model = FactoryModel
         # include_fk = True
-    class Meta:
-        model = FactoryModel
-    name = auto_field()
+    # class Meta:
+    #     model = FactoryModel
+    factory_name = fields.String()
     
     daily = Nested(PlanVsFactSchema)
     sum = Nested(PlanVsFactSchema)
 
 factory_schema = FactorySchema()
+
+class TransportSchema(Schema):
+    factory_name = fields.String()
+    transports=fields.List(fields.Nested(PlanVsFactSchema))
+transport_schema = TransportSchema()
